@@ -26,12 +26,9 @@ Junit 5 es un framework que nos permite realizar la ejecución de clases en Java
 
 ## Junit5
 * @Test - indicamos que es un método de prueba
-* assertNull - indicamso que debe ser nulo un atributo o un método
-* assertNotNull - indicamos que debe de ser not null
 * @BeforeEach - antes de cada método se ejecuta este test
 * @AfterEach - se ejecuta al terminar todos los demás tests
-* fail - para indicar un error o un fallo de forma manual
-* @Disabled - para especificar un test deshabilitado
+* @Disabled("comentario") - para especificar que un test está deshabilitado
 * @DisplayName - para cambiar el nombre del método test
 * @Nested - permite varias pruebas para el mismo test
 * @BeforeAll - se inicializa una sola vez, antes de cualquier método de test. Es un método estático.
@@ -43,10 +40,13 @@ Junit 5 es un framework que nos permite realizar la ejecución de clases en Java
 * assertNotSame(c1, c2);
 * assertSame(c2, c3);
 * assertEquals("Domingo", "Domingo");
-* assertEquals(1, 0.4, 0.5); // número esperado, número actual, margen de error
+* assertEquals(1, 0.4, 0.5); **número esperado, número actual, margen de error**
 * assertThrows(ArithmeticException.class, () -> calculator.divideByZero(2, 0));
 * assertAll - ajecuta todos los asserts, incluso los que fallan, sacando listado de todos con la diferencia que no se para en el assert que falla
 * assertTimeout - para controlar que un método no se ha quedado en bucle
+* assertNull - indicamso que debe ser nulo un atributo o un método
+* assertNotNull - indicamos que debe de ser not null
+* fail - para indicar un error o un fallo de forma manual
 
 #### Ejemplos
 - comprueba si la instancia se ha inicializado:
@@ -85,14 +85,91 @@ Junit 5 es un framework que nos permite realizar la ejecución de clases en Java
         System.out.println("Resultado es el esperado");
     }
 ```
-- para funciones lambda se necesita mínimo java 8
+- ejemplo para funciones lambda (se necesita mínimo java 8)
 ```
     @Test
     public void divideWithZeroResultWithException(){
         assertThrows(ArithmeticException.class, () -> calculator.divideByZero(2, 0));
     }
 ```
-- 
+- deshabilitar un test
+```
+    @Disabled("Deshabilidado hasta nuevo aviso")
+    @Test
+    @DisplayName("Método dividir por cero lanzando una excepción")
+    public void divideWithZeroResultWithException(){
+        assertThrows(ArithmeticException.class, () -> calculator.divideByZero(2, 0));
+    }
+```
+- ejemplo de como ejecutar varios assert a la vez, sacando listado indicando los que han fallado
+```
+    @Test
+    public void addAssertAllTest(){
+        assertAll(
+                () -> assertEquals(20, calculator.add(11, 19)),      
+                () -> assertEquals(20, calculator.divide(11, 2)),      
+                () -> assertEquals(20, calculator.substract(10, 8))      
+        );
+    } 
+```
+- ejemplo de como ejecutar varias pruebas para el mismo test
+```
+    @Nested
+    class addMultipleTest{
+        Calculator calculator = new Calculator();
+        
+        @Test
+        public void addPositive(){
+            assertEquals(20, calculator.add(10, 10));
+        }        
+        
+        @Test
+        public void addNegative(){
+            assertEquals(-20, calculator.add(-10, -10));
+        }       
+        
+        @Test
+        public void addDivide(){
+            assertEquals(20, calculator.divide(10, 5));
+        }
+    }
+```
+- ejemplo de iniciar métodos estáticos antes de cualquier test
+```
+    @BeforeAll
+    public static void inicializarTodosLosTest(){
+        calculatorStatic = new Calculator();
+        System.out.println("Calculadora inicializada");
+    }
+    
+    @AfterAll
+    public static void finalizarTodosLosTest(){
+        calculatorStatic = null;
+        System.out.println("Calculadora finalizada");
+    }
+```
+- ejemplo de pasar parámetros a un test
+```
+    @ParameterizedTest(name = "{index} => a={0}, b={1}, suma={2}")
+    @MethodSource("addProviderData")
+    public void addParametrizedTest(int a, int b, int suma){
+        assertEquals(suma, calculatorStatic.add(a, b));
+    }
+    
+    private static Stream<Arguments> addProviderData(){
+        return Stream.of(Arguments.of(6, 2, 8), Arguments.of(-6, -2, -8). Arguments.of(6, -2, 4), Arguments.of(6, 0, 6));
+    }
+```
+- ejemplo para controlar que un método no se ha quedado en bucle
+```
+    @Test
+    public void timeOutTest(){
+        assertTimeout(Duration.ofMillis(500), () -> {
+            calculatorStatic.longTaskOperation();
+        });
+    }
+```
+
 
 ## Mockito
 * Para mockear una clase y no usar un objeto real
