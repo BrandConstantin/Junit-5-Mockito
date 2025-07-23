@@ -1,6 +1,30 @@
-## Junit5 & Mockito
+# Junit5 & Mockito
+https://www.udemy.com/course/aprende-unit-test-en-java-con-junit-5-y-mockito
 
-### Junit5
+Ventajas:
+* incrementa la calidad del código
+* código con menos bugs
+* proporciona documentación al código
+* da garantias a la hora de refactorizar el código
+* es más económico
+
+Junit 5 es un framework que nos permite realizar la ejecución de clases en Java de una manera totalmente controlada. Dependencias de Maven necesarias para usar Junit 5
+```
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-engine</artifactId>
+    <version>5.5.2</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-api</artifactId>
+    <version>5.5.2</version>
+    <scope>test</scope>
+</dependency>
+```
+
+## Junit5
 * @Test - indicamos que es un método de prueba
 * assertNull - indicamso que debe ser nulo un atributo o un método
 * assertNotNull - indicamos que debe de ser not null
@@ -14,17 +38,63 @@
 * @AfterAll - se inicializa una sola vez, al final de cualquier método. Es un método estático.
 * @ParameterizedTest - para pasar varios parámetros y hacerse varias pruebas a la vez
 
-#### Asserts
+### Asserts
 * assertTrue(1 == 1);
 * assertNotSame(c1, c2);
 * assertSame(c2, c3);
 * assertEquals("Domingo", "Domingo");
-* assertEquals(1, 1.4, 0.5);
+* assertEquals(1, 0.4, 0.5); // número esperado, número actual, margen de error
 * assertThrows(ArithmeticException.class, () -> calculator.divideByZero(2, 0));
 * assertAll - ajecuta todos los asserts, incluso los que fallan, sacando listado de todos con la diferencia que no se para en el assert que falla
 * assertTimeout - para controlar que un método no se ha quedado en bucle
 
-### Mockito
+#### Ejemplos
+- comprueba si la instancia se ha inicializado:
+```
+    public class CalculatorJavaTest {
+        private Calculator calculator;
+        
+        @Test
+        public void calculatorNotNull(){
+            assertNull(calculator);
+        }
+    }
+```
+- pasos explicativos del test calculadora
+```
+    @Test
+    public void addNumbers(){
+        // 1 step: setup
+        Calculadora calculatoraAssert = new Calculadora();
+        int resultadoEsperado = 30;
+        int resultadoActual;
+        
+        // 2 step: action
+        resultadoActual = calculatoraAssert.add(10, 20);
+        
+        // 3 step: assert
+        assertEquals(resultadoEsperado, resultadoActual);
+        System.out.println("Resultado es el esperado");
+    }
+```
+- el ejemplo anterior se puede optimizar
+```
+    @Test
+    public void addNumbersTest(){
+        assertEquals(30, calculator.add(10, 20));
+        System.out.println("Resultado es el esperado");
+    }
+```
+- para funciones lambda se necesita mínimo java 8
+```
+    @Test
+    public void divideWithZeroResultWithException(){
+        assertThrows(ArithmeticException.class, () -> calculator.divideByZero(2, 0));
+    }
+```
+- 
+
+## Mockito
 * Para mockear una clase y no usar un objeto real
 ```
 private ValidNumber validNumber;
