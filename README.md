@@ -172,6 +172,12 @@ Junit 5 es un framework que nos permite realizar la ejecución de clases en Java
 
 
 ## Mockito
+Conceptos:
+* Stub – es un sistema bajo prueba, donde se le programan sus valores de retorno
+• Mock – se programa su comportamiento, al finalizar las pruebas, se comprueba si las interacciones con el stub han sido las esperadas
+• Spy – se comporta como un mock con la diferencia de que los métodos que no han sido bloqueados funcionan según el comportamiento que le hayamos dicho
+**Mockito** es un framework de java para testear y validar si el código ejecutado es el esperado.
+
 * Para mockear una clase y no usar un objeto real
 ```
 private ValidNumber validNumber;
