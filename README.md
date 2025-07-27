@@ -8,6 +8,18 @@ Ventajas:
 * da garantias a la hora de refactorizar el código
 * es más económico
 
+Se usan los test unitarios para:
+* comprobar correcto funcionamiento de una aplicación
+* verificar los nombres de los métodos y los parámetros de entrada y salida
+
+Junit es un framework de testing y tiene las características:
+• sistema de verificación de resultado
+• anotaciones para definir métodos de prueba
+• anotaciones para definir métodos adicionales pre y post prueba
+• control de excepciones
+• parametrización de datos
+• diferentes extenders/runners para guiar la ejecución de prueba
+
 Junit 5 es un framework que nos permite realizar la ejecución de clases en Java de una manera totalmente controlada. Dependencias de Maven necesarias para usar Junit 5
 ```
 <dependency>
@@ -37,10 +49,12 @@ Etiquteas importantes:
 * @ParameterizedTest - para pasar varios parámetros y hacerse varias pruebas a la vez
 * @Mock para usar un mock
 * @InjectMock para injectar un objeto en un @Mock
+* @Captor - para capturar objetos
 
 ### Asserts
 Los más usados:
 * assertTrue(1 == 1);
+* assertFals(1 > 1);
 * assertNotSame(c1, c2);
 * assertSame(c2, c3);
 * assertEquals("Domingo", "Domingo");
@@ -178,7 +192,7 @@ Los más usados:
 
 ## Mockito
 Conceptos:
-* Stub – es un sistema bajo prueba, donde se le programan sus valores de retorno
+* Stub – es un sistema bajo prueba, donde se le programan sus valores de retorno.Define comportamiento de la dependencia que se desea de mockear.
 * Mock – se programa su comportamiento, al finalizar las pruebas, se comprueba si las interacciones con el stub han sido las esperadas
 * Spy – se comporta como un mock con la diferencia de que los métodos que no han sido bloqueados funcionan según el comportamiento que le hayamos dicho
   
@@ -447,6 +461,20 @@ class WebServiceTest {
 }
 ```
 
+* Testeando indicando el comportamiento esperado de una dependencia externa a nuestro modulo
+```
+    @Before
+    public void before() throws Exception{
+        // mockear servicio
+        BbddService servicio = Mockito.mock(BbddService.class);
+        
+        // definición de 3 escenarios de comportamiento
+        when(servicio.buscarPersonaById(0)).thenReturn(null);
+        when(servicio.buscarPersonaById(1)).thenReturn(new Persona(1, "Julio", 23 "varón"));
+        when(mockedList.get(1)).thenThrow(new RuntimeException());
+    }
+```
+
 * Testeando el login
 ```
 package com.mockito;
@@ -523,4 +551,87 @@ class LoginTest {
         callback.onFail("Usuario o contraseña incorrecta");
         assertEquals(login.isLogin, false);
     }
+```
+
+### Verify
+* verficicación simple
+```
+    List<String> mockedList = mock(MyList.class);
+    
+    mockedList.size();
+    verify(mockedList).size();
+```
+* verificación de que hay interraciones sobre un mock
+```
+    List<String> mockedList = mock(MyList.class);
+
+    mockedList.size();
+    verify(mockedList, times(1)).size();
+```
+* verificación de que no hay interraciones sobre un mock
+```
+    List<String> mockedList = mock(MyList.class);
+    verifyZeroInteractions(mockedList);
+```
+* verfificación de que no hay interracciones sobre un método
+```
+    List<String> mockedList = mock(MyList.class);
+    verify(mockedList, times(0)).size();
+
+```
+* verfificación del orden de las interacciones
+```
+    List<String> mockedList = mock(MyList.class);
+
+    mockedList.size();
+    mockedList.add("a parameter");
+    mockedList.clear();
+
+    InOrder inOrder = Mockito.inOrder(mockedList);
+    inOrder.verify(mockedList).size();
+    inOrder.verify(mockedList).add("a parameter");
+    inOrder.verify(mockedList).clear();
+```
+* verfificación de que una interacción no ha ocurrido
+```
+    List<String> mockedList = mock(MyList.class);
+
+    mockedList.size();
+    verify(mockedList, never().size();
+```
+* verfificación de que una interración ha succedido al menos o como máximo veces
+```
+    List<String> mockedList = mock(MyList.class);
+
+    mockedList.clear();
+    mockedList.clear();
+    mockedList.clear();
+
+    verify(mockedList, atLeast(1).clear();
+    verify(mockedList, atMost(10).clear();
+```
+* verfificación de un argumento como parámetro
+```
+    List<String> mockedList = mock(MyList.class);
+
+    mockedList.add("a parameter");
+    verify(mockedList).add(anyString());
+```
+* verfificación de un argumento como párametro con un valor exacto
+```
+    List<String> mockedList = mock(MyList.class);
+
+    mockedList.add("testing");
+    verify(mockedList).add("testing");
+```
+* verfificación de un argumento como párametro con ArgumentCaptor
+```
+    List<String> mockedList = mock(MyList.class);
+
+    mockedList.addAll(Lists.<String> new ArrayList<>("someElement"));
+    ArgumentCaptor<List> argumentCaptor = ArgumentCaptor.forClass(List.class);
+    
+    verify(mockedList).addAll(argumentCaptor.capture());
+    List<String> capturedArgument = argumentCaptor.<List<String>> getValue();
+    assertThat(capturedArgument, hasItem("someElement"));
 ```
