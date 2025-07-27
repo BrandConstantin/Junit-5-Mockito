@@ -25,6 +25,7 @@ Junit 5 es un framework que nos permite realizar la ejecución de clases en Java
 ```
 
 ## Junit5
+Etiquteas importantes: 
 * @Test - indicamos que es un método de prueba
 * @BeforeEach - antes de cada método se ejecuta este test
 * @AfterEach - se ejecuta al terminar todos los demás tests
@@ -34,8 +35,11 @@ Junit 5 es un framework que nos permite realizar la ejecución de clases en Java
 * @BeforeAll - se inicializa una sola vez, antes de cualquier método de test. Es un método estático.
 * @AfterAll - se inicializa una sola vez, al final de cualquier método. Es un método estático.
 * @ParameterizedTest - para pasar varios parámetros y hacerse varias pruebas a la vez
+* @Mock para usar un mock
+* @InjectMock para injectar un objeto en un @Mock
 
 ### Asserts
+Los más usados:
 * assertTrue(1 == 1);
 * assertNotSame(c1, c2);
 * assertSame(c2, c3);
@@ -47,6 +51,7 @@ Junit 5 es un framework que nos permite realizar la ejecución de clases en Java
 * assertNull - indicamso que debe ser nulo un atributo o un método
 * assertNotNull - indicamos que debe de ser not null
 * fail - para indicar un error o un fallo de forma manual
+* when y thenReturn - cuando se cumple una condición devolver algo
 
 #### Ejemplos
 - comprueba si la instancia se ha inicializado:
@@ -181,33 +186,47 @@ Conceptos:
 
 * Para mockear una clase y no usar un objeto real
 ```
-private ValidNumber validNumber;
+class AddMock Test{
+    private Add add;
+    private ValidNumber validNumber;
 
-@BeforeEach
-public void setUp() {
-    validNumber = Mockito.mock(ValidNumber.class);
-    add = new Add(validNumber);
-}
-```
-* Para usar un dato a la hora del mockeo
-```
-@Test
-public void addTest() {
-    add.add(3, 2);
-    Mockito.verify(validNumber).check(3);
-    Mockito.verify(validNumber).check(5); // no funciona porque nunca se ha llamado al método con un 5
-}
-```
-* Para usar anotaciones hacemos uso de las etiquetas:
-    * @Mock para usar un mock
-    * @InjectMock para injectar un objeto en un @Mock
-    * por último inicializamos los mocks
-    ```
     @BeforeEach
-    public void setUp() {
+    public void setUp(){
+        validNumber = Mockito.mock(ValidNumber.class);
+        add = new Add(validNumber);
+    }
+
+    @Test
+    public void addTest(){
+        add.add(3, 2);
+        Mockito.verify(validNumber).check(3);
+        Mockito.verify(validNumber).check(5); // no funcionará porque nunca se ha llamado al método con un 5
+    }
+}
+```
+
+* Para no usar objetos reales con mockito se mockean los datos
+```
+class AddMock Test{
+    @InjectMocks
+    private Add add;
+    @Mock
+    private ValidNumber validNumber;
+
+    @BeforeEach
+    public void setUp(){ // inicializar los mocks
         MockitoAnnotations.initMocks(this);
     }
-    ```
+
+    @Test
+    public void addTest(){
+        add.add(3, 2);
+        Mockito.verify(validNumber).check(3);
+        Mockito.verify(validNumber).check(5); // no funcionará porque nunca se ha llamado al método con un 5
+    }
+}
+```
+
 * Para definir como se debe usar un método y que nos de un valor especifico se usa ``when`` y ``thenReturn``
 ```
 @Test
@@ -217,21 +236,26 @@ public void addTest() {
     assertEquals(true, checkNumber);
 }
 ```
-* Para lanzar una excepción
+
+* Para lanzar una excepción tras una comprobación
 ```
 @Test
 public void addMockExceptionTest() {
     when(validNumber.checkZero(0)).thenThrow(new ArithmeticException("No podemos aceptar un 0"));
 }
 ```
-* Patón when - thenCallRealMethod
+
+* Patrón when - thenCallRealMethod
 ```
 @Test
 public void addRealMethod() {
     when(validNumber.check(3)).thenCallRealMethod();
     assertEquals(true, validNumber.check(3));
+    when(validNumber.check("3")).thenCallRealMethod();
+    assertEquals(false, validNumber.check("3"));
 }
 ```
+
 * Método doubleToInt()
 ```
 @Test
@@ -247,46 +271,54 @@ public void addDoubleToIntThenAnswerTest() {
     assertEquals(14, add.addInt(7.7));
 }
 ```
-* Pátron de pruebas para mock
-    * Arrange - Act - Assert
+
+* Pátron de pruebas para mock con **Arrange - Act - Assert**
 ```
     @Test
     public void patterTest() {
         // Arrange
         when(validNumber.check(4)).thenReturn(true);
         when(validNumber.check(6)).thenReturn(true);
+
         // Act
         int result = add.add(4, 6);
+
         // Assert
         assertEquals(10, result);
     }
 ```
-* Patrón de prueba paa mock
-    * Given - When - Then
+
+* Patrón de prueba para mock con **Given - When - Then**
 ```
     @Test
     public void patterTest2() {
         // Given
         given(validNumber.check(4)).willReturn(true);
         given(validNumber.check(6)).willReturn(true);
+
         // When
         int result = add.add(4, 6);
+
         // Then
         assertEquals(10, result);
     }
 ```
+
 * ArgumentMatcher
 ```
     @Test
     public void argumentMatcherTest() {
         // Given
         given(validNumber.check(anyInt())).willReturn(true);
+
         // When
         int result = add.add(4, 6);
+
         // Then
         assertEquals(10, result);
     }
 ```
+
 * Testear los void y verify()
 ```
     @Mock
@@ -297,8 +329,10 @@ public void addDoubleToIntThenAnswerTest() {
         // Given
         given(validNumber.check(anyInt())).willReturn(true);
         given(validNumber.check(anyInt())).willReturn(true);
+
         // When
         add.addPrint(4, 6);
+
         // Then
         verify(validNumber).check(4);
         // verify(validNumber, times(2)).check(4); // si se comprueba más de una vez con given añadir times()
@@ -310,20 +344,27 @@ public void addDoubleToIntThenAnswerTest() {
         verify(print, never()).showError();
     }
 ```
+
 * ArgumentCaptor, para verificar los argumentos de java y capturarlos
 ```
+    @Captor
+    private ArgumentCaptor<Integer> captor
+
     @Test
     public void captorTest() {
         // Given
         given(validNumber.check(anyInt())).willReturn(true);
         given(validNumber.check(anyInt())).willReturn(true);
+
         // When
         add.addPrint(4, 6);
+
         // Then
         verify(print).showMessage(captor.capture());
         assertEquals(captor.getValue().intValue(), 10);
     }
 ```
+
 * Spy (espia), nos crea una envoltura para un objeto para capturar sus métodos
 ```
     @Spy
@@ -351,6 +392,7 @@ public void addDoubleToIntThenAnswerTest() {
         assertEquals(2, mockList.size());
     }
 ```
+
 * Testeando un webservice y callback
 ```
 package com.mockito;
@@ -404,6 +446,7 @@ class WebServiceTest {
     }
 }
 ```
+
 * Testeando el login
 ```
 package com.mockito;
@@ -461,6 +504,7 @@ class LoginTest {
 
 }
 ```
+
 * ArgumentCapture para callback
 ```
     @Captor
