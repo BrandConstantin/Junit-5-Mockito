@@ -13,14 +13,14 @@ Se usan los test unitarios para:
 * verificar los nombres de los métodos y los parámetros de entrada y salida
 
 Junit es un framework de testing y tiene las características:
-• sistema de verificación de resultado
-• anotaciones para definir métodos de prueba
-• anotaciones para definir métodos adicionales pre y post prueba
-• control de excepciones
-• parametrización de datos
-• diferentes extenders/runners para guiar la ejecución de prueba
+* sistema de verificación de resultado
+* anotaciones para definir métodos de prueba
+* anotaciones para definir métodos adicionales pre y post prueba
+* control de excepciones
+* parametrización de datos
+* diferentes extenders/runners para guiar la ejecución de prueba
 
-Junit 5 es un framework que nos permite realizar la ejecución de clases en Java de una manera totalmente controlada. Dependencias de Maven necesarias para usar Junit 5
+Junit 5 (Jupiter) es un framework que nos permite realizar la ejecución de clases en Java de una manera totalmente controlada. Dependencias de Maven necesarias para usar Junit 5
 ```
 <dependency>
     <groupId>org.junit.jupiter</groupId>
