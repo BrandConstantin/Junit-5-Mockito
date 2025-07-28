@@ -554,7 +554,7 @@ class LoginTest {
 ```
 
 ### Verify
-* verficicación simple
+* verificación simple
 ```
     List<String> mockedList = mock(MyList.class);
     
@@ -573,13 +573,13 @@ class LoginTest {
     List<String> mockedList = mock(MyList.class);
     verifyZeroInteractions(mockedList);
 ```
-* verfificación de que no hay interracciones sobre un método
+* verificación de que no hay interracciones sobre un método
 ```
     List<String> mockedList = mock(MyList.class);
     verify(mockedList, times(0)).size();
 
 ```
-* verfificación del orden de las interacciones
+* verificación del orden de las interacciones
 ```
     List<String> mockedList = mock(MyList.class);
 
@@ -592,14 +592,14 @@ class LoginTest {
     inOrder.verify(mockedList).add("a parameter");
     inOrder.verify(mockedList).clear();
 ```
-* verfificación de que una interacción no ha ocurrido
+* verificación de que una interacción no ha ocurrido
 ```
     List<String> mockedList = mock(MyList.class);
 
     mockedList.size();
     verify(mockedList, never().size();
 ```
-* verfificación de que una interración ha succedido al menos o como máximo veces
+* verificación de que una interración ha succedido al menos o como máximo veces
 ```
     List<String> mockedList = mock(MyList.class);
 
@@ -610,21 +610,21 @@ class LoginTest {
     verify(mockedList, atLeast(1).clear();
     verify(mockedList, atMost(10).clear();
 ```
-* verfificación de un argumento como parámetro
+* verificación de un argumento como parámetro
 ```
     List<String> mockedList = mock(MyList.class);
 
     mockedList.add("a parameter");
     verify(mockedList).add(anyString());
 ```
-* verfificación de un argumento como párametro con un valor exacto
+* verificación de un argumento como parámetro con un valor exacto
 ```
     List<String> mockedList = mock(MyList.class);
 
     mockedList.add("testing");
     verify(mockedList).add("testing");
 ```
-* verfificación de un argumento como párametro con ArgumentCaptor
+* verificación de un argumento como parámetro con ArgumentCaptor
 ```
     List<String> mockedList = mock(MyList.class);
 
