@@ -192,7 +192,7 @@ Los más usados:
 
 ## Mockito
 Conceptos:
-* Stub – es un sistema bajo prueba, donde se le programan sus valores de retorno.Define comportamiento de la dependencia que se desea de mockear.
+* Stub – es un sistema bajo prueba, donde se le programan sus valores de retorno. Define comportamiento de la dependencia que se desea de mockear.
 * Mock – se programa su comportamiento, al finalizar las pruebas, se comprueba si las interacciones con el stub han sido las esperadas
 * Spy – se comporta como un mock con la diferencia de que los métodos que no han sido bloqueados funcionan según el comportamiento que le hayamos dicho
   
@@ -635,3 +635,8 @@ class LoginTest {
     List<String> capturedArgument = argumentCaptor.<List<String>> getValue();
     assertThat(capturedArgument, hasItem("someElement"));
 ```
+
+Otro ejemplo de test:
+<img width="1332" height="545" alt="image" src="https://github.com/user-attachments/assets/d8f7dce1-5f8b-4e86-a9ac-08f5ddb097a1" />
+
+
